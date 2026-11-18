@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI·에듀테크 교과 융합 수업 아이디어</title>
+<meta name="description" content="학년, 교과 2개, 수업 주제 키워드로 에듀테크·AI 교과 융합 수업 아이디어를 만들어 주는 무료 웹앱">
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1d2433;
+    --muted: #5b6475;
+    --line: #dfe3ea;
+    --brand: #2f6fed;
+    --brand-soft: #e8f0fe;
+    --ok: #1f8a4c;
+    --ok-soft: #e4f4ea;
+    --warn: #a15c00;
+    --warn-soft: #fdf1dc;
+    --bad: #c0392b;
+    --bad-soft: #fbe9e7;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 2px 8px rgba(16, 24, 40, .05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12151b; --card: #1b2029; --ink: #e8ebf1; --muted: #a3abba; --line: #2c3340;
+      --brand: #6b9bff; --brand-soft: #1f2b45; --ok: #5cc98a; --ok-soft: #173326;
+      --warn: #f0b45a; --warn-soft: #3a2c14; --bad: #ff8a7a; --bad-soft: #3b1c18;
+      --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
+    font-size: 16px; line-height: 1.6;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: var(--brand); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  header.top {
+    background: var(--card); border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 20;
+  }
+  header.top .wrap { display: flex; align-items: center; gap: 12px; min-height: 60px; }
+  header.top h1 { font-size: 18px; margin: 0; flex: 1; line-height: 1.3; }
+  header.top h1 small { display: block; font-size: 12.5px; color: var(--muted); font-weight: 400; }
+  .btn {
+    border: 1px solid var(--line); background: var(--card); border-radius: 10px;
+    padding: 9px 14px; cursor: pointer; min-height: 42px; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { border-color: var(--brand); }
+  .btn:focus-visible, .chip:focus-visible, .grade:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 3px solid var(--brand); outline-offset: 2px;
+  }
+  .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); font-weight: 600; }
+  .btn.primary:disabled { opacity: .45; cursor: not-allowed; }
+  .btn.ghost { border-color: transparent; background: transparent; }
+  .btn.small { min-height: 36px; padding: 6px 10px; font-size: 14.5px; }
+  .btn.danger { color: var(--bad); }
+  .key-status { font-size: 13px; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+  .key-status.on { background: var(--ok-soft); color: var(--ok); }
+  .key-status.off { background: var(--warn-soft); color: var(--warn); }
+
+  main { padding: 20px 0 60px; }
+  .panel {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 20px;
+  }
+  .panel + .panel { margin-top: 16px; }
+  .field { margin-bottom: 18px; }
+  .field > label, .field > .label { display: block; font-weight: 600; margin-bottom: 8px; }
+  .hint { font-size: 14px; color: var(--muted); }
+  .grades { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .grade {
+    border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 10px 0;
+    cursor: pointer; font-weight: 600; min-height: 46px;
+  }
+  .grade[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 8px 14px;
+    cursor: pointer; min-height: 40px;
+  }
+  .chip[aria-pressed="true"] { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); font-weight: 600; }
+  .chip .order { display: inline-block; margin-right: 4px; font-size: 12px; }
+  input[type="text"], input[type="password"], select, textarea {
+    width: 100%; border: 1px solid var(--line); background: var(--card); border-radius: 10px;
+    padding: 10px 12px; min-height: 44px;
+  }
+  .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  details.options { border: 1px dashed var(--line); border-radius: 10px; padding: 10px 14px; margin-bottom: 18px; }
+  details.options summary { cursor: pointer; font-weight: 600; }
+  details.options[open] summary { margin-bottom: 12px; }
+  .suggest { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .suggest button { font-size: 14px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); cursor: pointer; }
+  .notice {
+    border-radius: 10px; padding: 10px 14px; font-size: 14.5px; margin: 0 0 14px;
+    background: var(--warn-soft); color: var(--warn);
+  }
+  .notice.info { background: var(--brand-soft); color: var(--ink); }
+  .notice.bad { background: var(--bad-soft); color: var(--bad); }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+  .results-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 24px 0 12px; }
+  .results-head h2 { margin: 0; font-size: 19px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 18px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .card h3 { margin: 0; font-size: 17.5px; line-height: 1.4; }
+  .card .fusion { margin: 0; color: var(--muted); font-size: 15px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .badge { font-size: 12.5px; padding: 2px 8px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); }
+  .badge.ok { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
+  .badge.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+  .badge.brand { background: var(--brand-soft); color: var(--brand); border-color: transparent; }
+  .card .sec { font-size: 14.5px; }
+  .card .sec strong { display: block; font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+  .card ul { margin: 0; padding-left: 18px; }
+  .card .foot { margin-top: auto; display: flex; gap: 6px; flex-wrap: wrap; padding-top: 6px; border-top: 1px solid var(--line); }
+  .disclaimer { font-size: 13.5px; color: var(--muted); margin-top: 12px; }
+
+  .loading { display: flex; align-items: center; gap: 12px; padding: 28px; justify-content: center; color: var(--muted); }
+  .spinner { width: 22px; height: 22px; border: 3px solid var(--line); border-top-color: var(--brand); border-radius: 50%; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+
+  dialog {
+    border: none; border-radius: 14px; padding: 0; width: min(720px, calc(100% - 24px));
+    max-height: calc(100vh - 40px); background: var(--card); color: var(--ink);
+  }
+  dialog::backdrop { background: rgba(10, 14, 22, .5); }
+  .dlg-head { display: flex; align-items: center; gap: 8px; padding: 16px 20px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--card); }
+  .dlg-head h2 { margin: 0; font-size: 18px; flex: 1; }
+  .dlg-body { padding: 18px 20px 22px; }
+  .dlg-body h3 { font-size: 16px; margin: 18px 0 6px; }
+  .dlg-body h3:first-child { margin-top: 0; }
+  .steps { margin: 0 0 14px; padding-left: 20px; }
+  .steps li { margin-bottom: 6px; }
+  .radio-row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+  .radio-row label { display: flex; gap: 6px; align-items: center; font-weight: 400; }
+  .lesson { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
+  .lesson h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .lesson p, .lesson ul { margin: 4px 0; font-size: 15px; }
+  .empty { text-align: center; color: var(--muted); padding: 30px 10px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: var(--bg);
+    padding: 10px 18px; border-radius: 999px; font-size: 14.5px; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 50;
+  }
+  .toast.show { opacity: 1; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 20px 0 40px; }
+
+  @media (max-width: 900px) { .cards { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) {
+    .cards { grid-template-columns: 1fr; }
+    .row { grid-template-columns: 1fr; }
+    .grades { grid-template-columns: repeat(3, 1fr); }
+    header.top h1 small { display: none; }
+    .panel { padding: 16px; }
+  }
+  @media print {
+    header.top, .panel.input, .card .foot, .results-head .actions, footer, .toast { display: none !important; }
+    body { background: #fff; }
+    .cards { grid-template-columns: 1fr; }
+    .card { break-inside: avoid; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>교과 융합 수업 아이디어
+      <small>AI·에듀테크를 활용한 초등 교과 융합 수업 설계 도우미</small>
+    </h1>
+    <span id="keyBadge" class="key-status off">키 없음</span>
+    <button class="btn small" id="openFav" type="button">즐겨찾기</button>
+    <button class="btn small" id="openKey" type="button" aria-label="API 키 설정">⚙ 키 설정</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel input" aria-labelledby="formTitle">
+    <h2 id="formTitle" class="sr-only">수업 조건 입력</h2>
+
+    <div class="field">
+      <span class="label" id="gradeLabel">1. 학년</span>
+      <div class="grades" role="group" aria-labelledby="gradeLabel" id="grades"></div>
+    </div>
+
+    <div class="field">
+      <span class="label" id="subjLabel">2. 교과 2개 선택</span>
+      <div class="chips" role="group" aria-labelledby="subjLabel" id="subjects">
+        <span class="hint">학년을 먼저 고르세요.</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="keyword">3. 수업 주제 키워드</label>
+      <input type="text" id="keyword" maxlength="60" placeholder="예: 기후위기, 분리배출 (쉼표로 최대 3개)" autocomplete="off">
+      <div class="suggest" id="suggest" aria-label="추천 키워드"></div>
+      <div id="kwMsg" class="hint" aria-live="polite"></div>
+    </div>
+
+    <details class="options">
+      <summary>세부 옵션 (선택)</summary>
+      <div class="row">
+        <div class="field">
+          <label for="optLessons">차시 수</label>
+          <select id="optLessons">
+            <option value="1차시">1차시</option>
+            <option value="2차시" selected>2차시</option>
+            <option value="3~4차시">3~4차시</option>
+            <option value="5차시 이상">5차시 이상</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="optDevice">기기 환경</label>
+          <select id="optDevice">
+            <option value="1인 1기기">1인 1기기</option>
+            <option value="모둠별 1대">모둠별 1대</option>
+            <option value="교사 시연만 가능">교사 시연만 가능</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="optTool">원하는 도구</label>
+          <input type="text" id="optTool" maxlength="40" placeholder="예: 엔트리, 패들렛">
+        </div>
+      </div>
+    </details>
+
+    <p class="notice info" style="font-size:14px">
+      학생 이름, 연락처 등 개인정보는 입력하지 마세요. 무료 등급에서는 Google이 입력 내용을 서비스 개선에 활용할 수 있습니다.
+    </p>
+
+    <div class="actions">
+      <button class="btn primary" id="generate" type="button" disabled>아이디어 만들기</button>
+      <span id="formMsg" class="hint" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <section id="results" aria-live="polite"></section>
+</main>
+
+<footer>
+  AI가 만든 초안입니다. 성취기준과 도구는 교사가 꼭 확인한 뒤 사용하세요.<br>
+  API 키와 즐겨찾기는 이 브라우저에만 저장되며 이 사이트 운영자에게 전송되지 않습니다.
+</footer>
+
+<!-- 키 설정 -->
+<dialog id="keyDlg" aria-labelledby="keyDlgTitle">
+  <div class="dlg-head">
+    <h2 id="keyDlgTitle">Gemini API 키 설정</h2>
+    <button class="btn ghost small" type="button" data-close aria-label="닫기">✕</button>
+  </div>
+  <div class="dlg-body">
+    <p class="hint" style="margin-top:0">이 앱은 선생님 본인의 무료 Gemini API 키로 동작합니다. 처음 한 번만 설정하면 됩니다.</p>
+    <ol class="steps">
+      <li><a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>에 개인 Google 계정으로 로그인합니다.</li>
+      <li><b>Create API key(API 키 만들기)</b>를 눌러 키를 만듭니다. <b>결제 정보는 등록하지 마세요</b>(무료 등급 유지).</li>
+      <li>만들어진 키를 복사해 아래 칸에 붙여 넣고 ‘연결 확인’을 누릅니다.</li>
+    </ol>
+    <p class="notice">무료 등급에서는 Google이 입력·출력 내용을 서비스 개선에 활용할 수 있고 사람이 검토할 수도 있습니다. 학생 개인정보는 절대 입력하지 마세요.</p>
+
+    <div class="field">
+      <label for="apiKey">API 키</label>
+      <input type="password" id="apiKey" autocomplete="off" spellcheck="false" placeholder="AIza로 시작하는 키">
+      <label style="font-weight:400;margin-top:6px;display:flex;gap:6px;align-items:center">
+        <input type="checkbox" id="showKey"> 키 보이기
+      </label>
+    </div>
+    <div class="field">
+      <span class="label">저장 방식</span>
+      <div class="radio-row">
+        <label><input type="radio" name="keyMode" value="local" checked> 이 기기에 저장</label>
+        <label><input type="radio" name="keyMode" value="session"> 이번만 사용(탭을 닫으면 삭제, 공용 PC 권장)</label>
+      </div>
+    </div>
+    <details class="options">
+      <summary>고급: 모델 설정</summary>
+      <div class="row" style="grid-template-columns:1fr 1fr">
+        <div class="field">
+          <label for="modelMain">기본 모델</label>
+          <input type="text" id="modelMain" spellcheck="false">
+        </div>
+        <div class="field">
+          <label for="modelFallback">한도 초과 시 대체 모델</label>
+          <input type="text" id="modelFallback" spellcheck="false">
+        </div>
+      </div>
+      <p class="hint" style="margin:0">무료 등급에서 쓸 수 있는 Flash·Flash-Lite 계열 모델 ID를 입력하세요. 모델이 바뀌면 여기만 고치면 됩니다.</p>
+    </details>
+    <div id="keyMsg" aria-live="polite"></div>
+    <div class="actions">
+      <button class="btn primary" type="button" id="saveKey">연결 확인 후 저장</button>
+      <button class="btn danger" type="button" id="deleteKey">키 삭제</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 상세 -->
+<dialog id="detailDlg" aria-labelledby="detailTitle">
+  <div class="dlg-head">
+    <h2 id="detailTitle">수업 상세</h2>
+    <button class="btn small" type="button" id="detailCopy">복사</button>
+    <button class="btn ghost small" type="button" data-close aria-label="닫기">✕</button>
+  </div>
+  <div class="dlg-body" id="detailBody"></div>
+</dialog>
+
+<!-- 즐겨찾기 -->
+<dialog id="favDlg" aria-labelledby="favTitle">
+  <div class="dlg-head">
+    <h2 id="favTitle">즐겨찾기</h2>
+    <button class="btn ghost small" type="button" data-close aria-label="닫기">✕</button>
+  </div>
+  <div class="dlg-body" id="favBody"></div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   설정
+   ========================================================= */
+const CONFIG = {
+  defaultModel: "gemini-3.8-flash",
+  defaultFallback: "gemini-3.5-flash-lite",
+  apiBase: "https://generativelanguage.googleapis.com/v1beta",
+  cacheLimit: 20,
+  favLimit: 100
+};
+
+/* 2022 개정 교육과정 학년별 교과 (창의적 체험활동 제외) */
+const SUBJECTS_BY_BAND = {
+  "1-2": ["국어", "수학", "바른 생활", "슬기로운 생활", "즐거운 생활"],
+  "3-4": ["국어", "사회", "도덕", "수학", "과학", "체육", "음악", "미술", "영어"],
+  "5-6": ["국어", "사회", "도덕", "수학", "과학", "실과", "체육", "음악", "미술", "영어"]
+};
+
+/* 성취기준 코드 약어: [학년군 끝 숫자 + 약어 + 영역-번호] 예) [6과01-01] */
+const SUBJECT_ABBR = {
+  "국어": "국", "수학": "수", "바른 생활": "바", "슬기로운 생활": "슬", "즐거운 생활": "즐",
+  "사회": "사", "도덕": "도", "과학": "과", "실과": "실", "체육": "체", "음악": "음", "미술": "미", "영어": "영"
+};
+
+/*
+  검증된 성취기준 데이터(선택).
+  국가교육과정정보센터(ncic.go.kr)의 2022 개정 성취기준을 아래 형식으로 넣으면
+  여기 있는 코드만 '확인됨'으로 표시하고, 모델에게도 이 목록 안에서만 고르게 합니다.
+  비어 있으면 코드 형식만 검사하고 '확인 필요'로 표시합니다.
+  예)
+  "5-6|과학": [
+    { code: "[6과01-01]", text: "성취기준 문장..." }
+  ]
+*/
+const STANDARDS = {};
+
+/* 에듀테크 도구 사전 */
+const TOOLS = [
+  { name: "엔트리", type: "블록 코딩", genAI: false },
+  { name: "스크래치", type: "블록 코딩", genAI: false },
+  { name: "패들렛", type: "협업 게시판", genAI: false },
+  { name: "띵커벨", type: "퀴즈·토론", genAI: false },
+  { name: "캔바", type: "디자인·발표", genAI: false },
+  { name: "미리캔버스", type: "디자인·발표", genAI: false },
+  { name: "구글 슬라이드", type: "발표·협업", genAI: false },
+  { name: "구글 문서", type: "협업 글쓰기", genAI: false },
+  { name: "구글 설문지", type: "설문·자료 수집", genAI: false },
+  { name: "구글 어스", type: "지도·탐색", genAI: false },
+  { name: "북크리에이터", type: "전자책 만들기", genAI: false },
+  { name: "티처블 머신", type: "AI 모델 만들기(머신러닝 체험)", genAI: false },
+  { name: "퀵드로우", type: "AI 그림 인식 체험", genAI: false },
+  { name: "오토드로우", type: "AI 그림 보조", genAI: false },
+  { name: "크롬 뮤직랩", type: "음악 창작", genAI: false },
+  { name: "마이크로비트", type: "피지컬 컴퓨팅", genAI: false },
+  { name: "생성형 AI 챗봇", type: "대화형 AI(교사 시연)", genAI: true },
+  { name: "AI 이미지 생성", type: "이미지 생성(교사 시연)", genAI: true }
+];
+
+const KEYWORD_SUGGEST = ["기후위기", "분리배출", "우리 지역", "안전", "건강한 생활", "에너지 절약", "다양한 직업", "동식물", "가족", "디지털 시민성"];
+
+/* =========================================================
+   상태와 저장소
+   ========================================================= */
+const state = {
+  grade: null,
+  subjects: [],
+  lastIdeas: [],
+  lastInput: null,
+  busy: false,
+  detailText: ""
+};
+
+const store = {
+  get(k, fallback) {
+    try { const v = localStorage.getItem(k); return v === null ? fallback : JSON.parse(v); }
+    catch (e) { return fallback; }
+  },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 공간 부족 등 */ } },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+
+function getKey() {
+  try { return sessionStorage.getItem("gem_key") || localStorage.getItem("gem_key") || ""; }
+  catch (e) { return ""; }
+}
+function setKey(key, mode) {
+  try {
+    localStorage.removeItem("gem_key"); sessionStorage.removeItem("gem_key");
+    (mode === "session" ? sessionStorage : localStorage).setItem("gem_key", key);
+  } catch (e) {}
+}
+function clearKey() {
+  try { localStorage.removeItem("gem_key"); sessionStorage.removeItem("gem_key"); } catch (e) {}
+}
+function getModels() {
+  const m = store.get("gem_models", null) || {};
+  return { main: m.main || CONFIG.defaultModel, fallback: m.fallback || CONFIG.defaultFallback };
+}
+
+/* =========================================================
+   유틸
+   ========================================================= */
+const $ = sel => document.querySelector(sel);
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function bandOf(grade) { return grade <= 2 ? "1-2" : grade <= 4 ? "3-4" : "5-6"; }
+function bandDigit(grade) { return grade <= 2 ? "2" : grade <= 4 ? "4" : "6"; }
+let toastTimer;
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); toast("복사했어요"); }
+  catch (e) {
+    const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta);
+    ta.select(); try { document.execCommand("copy"); toast("복사했어요"); } catch (_) { toast("복사하지 못했어요"); }
+    ta.remove();
+  }
+}
+function hashKey(obj) { return JSON.stringify(obj); }
+
+/* 개인정보로 보이는 패턴 */
+function looksPersonal(text) {
+  return /01[016789][-\s]?\d{3,4}[-\s]?\d{4}/.test(text) ||        // 휴대전화
+         /[\w.+-]+@[\w-]+\.[\w.]+/.test(text) ||                      // 이메일
+         /\d{6}[-\s]?[1-4]\d{6}/.test(text);                           // 주민등록번호 형태
+}
+
+/* =========================================================
+   입력 화면
+   ========================================================= */
+function renderGrades() {
+  const box = $("#grades");
+  box.innerHTML = "";
+  for (let g = 1; g <= 6; g++) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "grade"; b.textContent = g + "학년";
+    b.setAttribute("aria-pressed", String(state.grade === g));
+    b.addEventListener("click", () => selectGrade(g));
+    box.appendChild(b);
+  }
+}
+function selectGrade(g) {
+  const prevBand = state.grade ? bandOf(state.grade) : null;
+  state.grade = g;
+  if (prevBand !== bandOf(g)) state.subjects = [];
+  renderGrades(); renderSubjects(); validateForm();
+}
+function renderSubjects() {
+  const box = $("#subjects");
+  box.innerHTML = "";
+  if (!state.grade) { box.innerHTML = '<span class="hint">학년을 먼저 고르세요.</span>'; return; }
+  SUBJECTS_BY_BAND[bandOf(state.grade)].forEach(name => {
+    const b = document.createElement("button");
+    const idx = state.subjects.indexOf(name);
+    b.type = "button"; b.className = "chip";
+    b.setAttribute("aria-pressed", String(idx >= 0));
+    b.innerHTML = (idx >= 0 ? '<span class="order">' + (idx + 1) + '</span>' : "") + esc(name);
+    b.addEventListener("click", () => toggleSubject(name));
+    box.appendChild(b);
+  });
+}
+function toggleSubject(name) {
+  const i = state.subjects.indexOf(name);
+  if (i >= 0) state.subjects.splice(i, 1);
+  else {
+    state.subjects.push(name);
+    if (state.subjects.length > 2) state.subjects.shift(); // 가장 먼저 고른 교과 해제
+  }
+  renderSubjects(); validateForm();
+}
+function renderSuggest() {
+  const box = $("#suggest");
+  box.innerHTML = '<span class="hint">추천:</span>';
+  KEYWORD_SUGGEST.forEach(k => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = k;
+    b.addEventListener("click", () => {
+      const cur = parseKeywords($("#keyword").value);
+      if (!cur.includes(k) && cur.length < 3) cur.push(k);
+      $("#keyword").value = cur.join(", ");
+      validateForm();
+    });
+    box.appendChild(b);
+  });
+}
+function parseKeywords(v) {
+  return v.split(/[,，]/).map(s => s.trim()).filter(Boolean);
+}
+function validateForm() {
+  const kws = parseKeywords($("#keyword").value);
+  let msg = "";
+  const raw = $("#keyword").value.trim();
+  if (raw && (raw.length < 2 || raw.length > 30)) msg = "키워드는 2~30자로 입력하세요.";
+  else if (kws.length > 3) msg = "키워드는 최대 3개까지 입력할 수 있어요.";
+  const personal = looksPersonal($("#keyword").value + " " + $("#optTool").value);
+  if (personal) msg = "연락처·이메일 같은 개인정보로 보이는 내용이 있어요. 지우고 다시 입력하세요.";
+  $("#kwMsg").textContent = msg;
+  $("#kwMsg").style.color = msg ? "var(--bad)" : "";
+
+  const ok = state.grade && state.subjects.length === 2 && kws.length >= 1 && !msg;
+  $("#generate").disabled = !ok || state.busy;
+  let form = "";
+  if (!state.grade) form = "학년을 고르세요.";
+  else if (state.subjects.length < 2) form = "교과를 2개 고르세요. (" + state.subjects.length + "/2)";
+  else if (!kws.length) form = "키워드를 입력하세요.";
+  $("#formMsg").textContent = state.busy ? "" : form;
+  return ok;
+}
+
+/* =========================================================
+   Gemini 호출
+   ========================================================= */
+class ApiError extends Error {
+  constructor(status, message) { super(message); this.status = status; }
+}
+
+async function callGemini(model, systemText, userText, schema, temperature) {
+  const key = getKey();
+  if (!key) throw new ApiError(401, "NO_KEY");
+  const body = {
+    systemInstruction: { parts: [{ text: systemText }] },
+    contents: [{ role: "user", parts: [{ text: userText }] }],
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: schema,
+      temperature: temperature
+    }
+  };
+  let res;
+  try {
+    res = await fetch(CONFIG.apiBase + "/models/" + encodeURIComponent(model) + ":generateContent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify(body)
+    });
+  } catch (e) {
+    throw new ApiError(0, "NETWORK");
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const msg = (data.error && data.error.message) || ("HTTP " + res.status);
+    throw new ApiError(res.status, msg);
+  }
+  const cand = data.candidates && data.candidates[0];
+  if (!cand) {
+    const reason = data.promptFeedback && data.promptFeedback.blockReason;
+    throw new ApiError(422, reason ? "BLOCKED" : "EMPTY");
+  }
+  if (cand.finishReason === "SAFETY") throw new ApiError(422, "BLOCKED");
+  const text = (cand.content && cand.content.parts || []).map(p => p.text || "").join("");
+  try { return JSON.parse(text); }
+  catch (e) { throw new ApiError(502, "PARSE"); }
+}
+
+/* 한도 초과·과부하면 대체 모델로, 파싱 실패면 한 번 더 */
+async function generateWithRetry(systemText, userText, schema, temperature) {
+  const models = getModels();
+  try {
+    return await callGemini(models.main, systemText, userText, schema, temperature);
+  } catch (e) {
+    if (e.status === 429 || e.status === 503 || e.status === 500 || e.status === 404) {
+      return await callGemini(models.fallback, systemText, userText, schema, temperature);
+    }
+    if (e.status === 502) {
+      return await callGemini(models.main, systemText, userText, schema, temperature);
+    }
+    throw e;
+  }
+}
+
+function friendlyError(e) {
+  if (e.message === "NO_KEY") return { text: "API 키가 없어요. 먼저 키를 설정하세요.", openKey: true };
+  if (e.status === 0) return { text: "인터넷 연결을 확인한 뒤 다시 시도하세요." };
+  if (e.status === 400 && /API key/i.test(e.message)) return { text: "API 키가 올바르지 않아요. 키 설정을 확인하세요.", openKey: true };
+  if (e.status === 401 || e.status === 403) return { text: "API 키를 사용할 수 없어요. 키 설정을 확인하세요.", openKey: true };
+  if (e.status === 404) return { text: "모델을 찾을 수 없어요. 키 설정의 ‘고급: 모델 설정’에서 모델 이름을 확인하세요.", openKey: true };
+  if (e.status === 429) return { text: "오늘 무료 사용량을 다 쓴 것 같아요. 무료 한도는 매일 초기화되니 내일 다시 시도하세요." };
+  if (e.status === 422) return { text: "이 키워드로는 아이디어를 만들 수 없어요. 초등 수업에 맞는 다른 키워드로 바꿔 보세요." };
+  if (e.status === 502) return { text: "결과를 읽지 못했어요. 다시 시도해 주세요." };
+  return { text: "문제가 생겼어요: " + e.message };
+}
+
+/* ---------- 스키마 ---------- */
+const IDEAS_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    ideas: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          title: { type: "STRING" },
+          fusionPoint: { type: "STRING" },
+          standards: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: { subject: { type: "STRING" }, code: { type: "STRING" }, text: { type: "STRING" } },
+              required: ["subject", "code", "text"]
+            }
+          },
+          tools: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                name: { type: "STRING" }, use: { type: "STRING" },
+                caution: { type: "STRING" }, alternative: { type: "STRING" }
+              },
+              required: ["name", "use", "caution", "alternative"]
+            }
+          },
+          flow: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: { stage: { type: "STRING" }, activity: { type: "STRING" } },
+              required: ["stage", "activity"]
+            }
+          },
+          studentOutput: { type: "STRING" },
+          assessment: { type: "ARRAY", items: { type: "STRING" } },
+          ethicsPoint: { type: "STRING" },
+          difficulty: { type: "STRING", enum: ["상", "중", "하"] }
+        },
+        required: ["title", "fusionPoint", "standards", "tools", "flow", "studentOutput", "assessment", "ethicsPoint", "difficulty"]
+      }
+    }
+  },
+  required: ["ideas"]
+};
+
+const EXPAND_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    lessons: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          lessonNo: { type: "STRING" },
+          goal: { type: "STRING" },
+          intro: { type: "STRING" },
+          main: { type: "ARRAY", items: { type: "STRING" } },
+          wrap: { type: "STRING" },
+          materials: { type: "ARRAY", items: { type: "STRING" } }
+        },
+        required: ["lessonNo", "goal", "intro", "main", "wrap", "materials"]
+      }
+    },
+    tips: { type: "ARRAY", items: { type: "STRING" } }
+  },
+  required: ["lessons", "tips"]
+};
+
+/* ---------- 프롬프트 ---------- */
+const SYSTEM_PROMPT = [
+  "너는 대한민국 초등학교 2022 개정 교육과정과 에듀테크에 밝은 수업 설계 전문가다.",
+  "규칙:",
+  "1. 선택한 두 교과가 모두 실질적으로 기여하는 교과 융합 수업을 설계한다. 한 교과가 들러리가 되지 않게 한다.",
+  "2. 학년 발달 수준에 맞춘다. 저학년(1~2학년)은 놀이·체험 중심, 짧은 활동, 교사 주도 기기 활용을 기본으로 한다.",
+  "3. 도구는 수단이며 학습 목표가 우선이다. 가능하면 제공된 도구 목록에서 고르고, 목록 밖 도구는 정확한 이름을 쓴다.",
+  "4. 생성형 AI(챗봇, 이미지 생성 등)는 연령 제한이 있는 경우가 많으므로 학생 직접 사용이 아니라 교사 시연형으로 설계한다.",
+  "5. 성취기준 코드는 2022 개정 교육과정 형식 [학년군숫자+교과약어+영역-번호]를 따르고, 확실하지 않은 코드는 지어내지 말고 가장 관련 있는 것만 쓴다. 성취기준 목록이 주어지면 반드시 그 목록 안에서만 고른다.",
+  "6. 3개 아이디어는 활용 도구와 활동 유형(예: 탐구, 제작, 토론, 코딩, 데이터 분석)이 서로 겹치지 않게 한다.",
+  "7. 학생 개인정보를 수집하는 활동은 설계하지 않는다.",
+  "8. 모든 내용은 한국어로, 교사가 바로 읽고 쓸 수 있게 간결하게 쓴다."
+].join("\n");
+
+function buildIdeasPrompt(input, avoidTitles) {
+  const band = bandOf(input.grade);
+  const lines = [
+    "학년: " + input.grade + "학년 (" + band + "학년군)",
+    "교과 1: " + input.subjects[0],
+    "교과 2: " + input.subjects[1],
+    "수업 주제 키워드: " + input.keywords.join(", "),
+    "차시 수: " + input.lessons,
+    "기기 환경: " + input.device,
+    input.tool ? "교사가 원하는 도구: " + input.tool : "",
+    "",
+    "성취기준 코드 약어: " + input.subjects.map(s => s + "=" + SUBJECT_ABBR[s]).join(", ") + ", 학년군 숫자=" + bandDigit(input.grade),
+  ];
+  input.subjects.forEach(s => {
+    const list = STANDARDS[band + "|" + s];
+    if (list && list.length) {
+      lines.push("", "[" + s + " 성취기준 목록 - 이 안에서만 고를 것]");
+      list.forEach(x => lines.push(x.code + " " + x.text));
+    }
+  });
+  lines.push("", "[에듀테크 도구 목록]");
+  TOOLS.forEach(t => lines.push("- " + t.name + " (" + t.type + ")"));
+  lines.push(
+    "",
+    "요청: 위 조건으로 교과 융합 수업 아이디어 3개를 만든다.",
+    "- standards: 두 교과 각각 1개 이상",
+    "- tools: 1~2개, use=수업 중 활용 장면, caution=연령 제한·계정 필요 등 주의점, alternative=대체 도구 또는 무기기 대안",
+    "- flow: 도입·전개·정리 단계별 핵심 활동(차시가 여러 개면 stage에 차시를 함께 표기)",
+    "- assessment: 평가 요소 2~3개",
+    "- ethicsPoint: AI 편향, 저작권, 개인정보, 디지털 예절 등 수업 중 짚을 디지털 윤리 1가지",
+    "- difficulty: 교사 준비 부담(상/중/하)"
+  );
+  if (avoidTitles && avoidTitles.length) {
+    lines.push("", "이전에 제안한 다음 아이디어와 겹치지 않게 새롭게 만든다: " + avoidTitles.join(" / "));
+  }
+  return lines.filter(l => l !== null).join("\n");
+}
+
+function buildExpandPrompt(input, idea) {
+  return [
+    "다음 교과 융합 수업 아이디어를 " + input.lessons + " 분량의 차시별 수업 흐름으로 자세히 펼쳐 줘.",
+    "학년: " + input.grade + "학년, 교과: " + input.subjects.join(" + ") + ", 기기 환경: " + input.device,
+    "",
+    "수업명: " + idea.title,
+    "융합 포인트: " + idea.fusionPoint,
+    "도구: " + idea.tools.map(t => t.name).join(", "),
+    "학생 산출물: " + idea.studentOutput,
+    "",
+    "각 차시마다 lessonNo(예: 1차시), goal(학습 목표), intro(도입 활동), main(전개 활동 2~4개, 교사 발문 예시 포함), wrap(정리 활동), materials(준비물)을 쓴다.",
+    "tips에는 수업 운영 팁과 예상되는 어려움 대응 방법을 3개 이내로 쓴다."
+  ].join("\n");
+}
+
+/* ---------- 결과 검증 ---------- */
+function validateIdeas(ideas, input) {
+  const band = bandOf(input.grade);
+  const digit = bandDigit(input.grade);
+  return (ideas || []).slice(0, 3).map(idea => {
+    const stds = [];
+    (idea.standards || []).forEach(s => {
+      const code = String(s.code || "").replace(/\s/g, "");
+      const norm = code.startsWith("[") ? code : "[" + code + "]";
+      const subj = input.subjects.find(x => x === s.subject) ||
+                   input.subjects.find(x => norm.includes(SUBJECT_ABBR[x]));
+      if (!subj) return;
+      const pattern = new RegExp("^\\[" + digit + SUBJECT_ABBR[subj] + "\\d{2}-\\d{2}\\]$");
+      if (!pattern.test(norm)) return; // 형식이 맞지 않으면 제거
+      const list = STANDARDS[band + "|" + subj];
+      let status = "check";
+      let text = s.text;
+      if (list && list.length) {
+        const hit = list.find(x => x.code === norm);
+        if (!hit) return; // 검증 데이터에 없으면 제거
+        status = "ok"; text = hit.text;
+      }
+      stds.push({ subject: subj, code: norm, text: text, status: status });
+    });
+    const tools = (idea.tools || []).map(t => {
+      const dict = TOOLS.find(d => t.name && (t.name.includes(d.name) || d.name.includes(t.name)));
+      return Object.assign({}, t, {
+        known: !!dict,
+        genAI: dict ? dict.genAI : /AI|챗봇|생성/.test(t.name || "")
+      });
+    });
+    return Object.assign({}, idea, { standards: stds, tools: tools });
+  });
+}
+
+/* =========================================================
+   생성
+   ========================================================= */
+function collectInput() {
+  return {
+    grade: state.grade,
+    subjects: state.subjects.slice(),
+    keywords: parseKeywords($("#keyword").value).slice(0, 3),
+    lessons: $("#optLessons").value,
+    device: $("#optDevice").value,
+    tool: $("#optTool").value.trim()
+  };
+}
+
+async function generate(regenerate) {
+  if (state.busy) return;
+  if (!validateForm()) return;
+  if (!getKey()) { openKeyDialog(); return; }
+
+  const input = regenerate && state.lastInput ? state.lastInput : collectInput();
+  const cacheKey = hashKey(input);
+  const cache = store.get("idea_cache", {});
+
+  if (!regenerate && cache[cacheKey]) {
+    state.lastInput = input; state.lastIdeas = cache[cacheKey].ideas;
+    renderResults(input, state.lastIdeas, true);
+    return;
+  }
+
+  setBusy(true, "아이디어를 만드는 중… 두 교과의 성취기준을 엮고 있어요");
+  try {
+    const avoid = regenerate ? state.lastIdeas.map(i => i.title) : [];
+    const raw = await generateWithRetry(SYSTEM_PROMPT, buildIdeasPrompt(input, avoid), IDEAS_SCHEMA, regenerate ? 1.0 : 0.8);
+    const ideas = validateIdeas(raw.ideas, input);
+    if (!ideas.length) throw new ApiError(502, "PARSE");
+    state.lastInput = input; state.lastIdeas = ideas;
+
+    cache[cacheKey] = { ideas: ideas, at: Date.now() };
+    const keys = Object.keys(cache).sort((a, b) => cache[b].at - cache[a].at);
+    keys.slice(CONFIG.cacheLimit).forEach(k => delete cache[k]);
+    store.set("idea_cache", cache);
+
+    renderResults(input, ideas, false);
+  } catch (e) {
+    const fe = friendlyError(e);
+    $("#results").innerHTML = '<p class="notice bad" style="margin-top:20px">' + esc(fe.text) + "</p>";
+    if (fe.openKey) openKeyDialog();
+  } finally {
+    setBusy(false);
+  }
+}
+
+function setBusy(on, msg) {
+  state.busy = on;
+  validateForm();
+  if (on) {
+    $("#results").innerHTML = '<div class="loading" role="status"><div class="spinner" aria-hidden="true"></div><span>' + esc(msg) + "</span></div>";
+    $("#results").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+/* =========================================================
+   결과 렌더링
+   ========================================================= */
+function stdHtml(s) {
+  const badge = s.status === "ok"
+    ? '<span class="badge ok">확인됨</span>'
+    : '<span class="badge warn" title="국가교육과정정보센터에서 확인하세요">확인 필요</span>';
+  return "<li><b>" + esc(s.code) + "</b> " + esc(s.text) + " " + badge + "</li>";
+}
+function toolBadges(tools) {
+  return tools.map(t => {
+    let cls = "badge brand", extra = "";
+    if (t.genAI) { cls = "badge warn"; extra = " · 교사 시연"; }
+    else if (!t.known) { cls = "badge warn"; extra = " · 확인 필요"; }
+    return '<span class="' + cls + '">' + esc(t.name) + extra + "</span>";
+  }).join("");
+}
+
+function renderResults(input, ideas, fromCache) {
+  const favs = store.get("favorites", []);
+  const head =
+    '<div class="results-head">' +
+      "<h2>" + input.grade + "학년 · " + esc(input.subjects.join(" + ")) + " · " + esc(input.keywords.join(", ")) + "</h2>" +
+      '<div class="actions">' +
+        (fromCache ? '<span class="hint">이전에 만든 결과예요</span>' : "") +
+        '<button class="btn small" type="button" id="regen">다시 만들기</button>' +
+        '<button class="btn small" type="button" id="printBtn">인쇄</button>' +
+      "</div>" +
+    "</div>";
+
+  const cards = ideas.map((idea, i) => {
+    const isFav = favs.some(f => f.idea.title === idea.title && hashKey(f.input) === hashKey(input));
+    const hasStd = idea.standards.length > 0;
+    return '<article class="card" aria-labelledby="idea-' + i + '">' +
+      '<div class="badges"><span class="badge">아이디어 ' + (i + 1) + '</span><span class="badge">준비 부담 ' + esc(idea.difficulty) + "</span></div>" +
+      '<h3 id="idea-' + i + '">' + esc(idea.title) + "</h3>" +
+      '<p class="fusion">' + esc(idea.fusionPoint) + "</p>" +
+      '<div class="badges">' + toolBadges(idea.tools) + "</div>" +
+      '<div class="sec"><strong>관련 성취기준</strong>' +
+        (hasStd ? "<ul>" + idea.standards.map(stdHtml).join("") + "</ul>"
+                : '<span class="hint">형식이 맞는 성취기준이 없어 제외했어요. 직접 확인하세요.</span>') +
+      "</div>" +
+      '<div class="sec"><strong>수업 흐름</strong><ul>' +
+        idea.flow.map(f => "<li><b>" + esc(f.stage) + "</b> " + esc(f.activity) + "</li>").join("") +
+      "</ul></div>" +
+      '<div class="sec"><strong>학생 산출물</strong>' + esc(idea.studentOutput) + "</div>" +
+      '<div class="foot">' +
+        '<button class="btn small" type="button" data-act="detail" data-i="' + i + '">자세히</button>' +
+        '<button class="btn small" type="button" data-act="copy" data-i="' + i + '">복사</button>' +
+        '<button class="btn small" type="button" data-act="fav" data-i="' + i + '" aria-pressed="' + isFav + '">' + (isFav ? "★ 저장됨" : "☆ 즐겨찾기") + "</button>" +
+      "</div>" +
+    "</article>";
+  }).join("");
+
+  $("#results").innerHTML = head + '<div class="cards">' + cards + "</div>" +
+    '<p class="disclaimer">AI가 만든 초안입니다. ‘확인 필요’ 표시된 성취기준은 <a href="https://ncic.go.kr" target="_blank" rel="noopener">국가교육과정정보센터</a>에서, 도구의 연령 제한과 계정 정책은 각 서비스에서 확인하세요.</p>';
+
+  $("#regen").addEventListener("click", () => generate(true));
+  $("#printBtn").addEventListener("click", () => window.print());
+  $("#results").querySelectorAll("[data-act]").forEach(b => {
+    b.addEventListener("click", () => {
+      const idea = state.lastIdeas[Number(b.dataset.i)];
+      if (b.dataset.act === "copy") copyText(ideaToMarkdown(idea, state.lastInput));
+      if (b.dataset.act === "fav") toggleFav(idea, state.lastInput, b);
+      if (b.dataset.act === "detail") openDetail(idea, state.lastInput, false);
+    });
+  });
+}
+
+function ideaToMarkdown(idea, input, expanded) {
+  const L = [];
+  L.push("# " + idea.title);
+  L.push("- 학년/교과: " + input.grade + "학년 · " + input.subjects.join(" + ") + " · " + input.keywords.join(", "));
+  L.push("- 융합 포인트: " + idea.fusionPoint);
+  L.push("", "## 관련 성취기준");
+  idea.standards.forEach(s => L.push("- " + s.code + " " + s.text + (s.status === "ok" ? "" : " (확인 필요)")));
+  L.push("", "## 활용 도구");
+  idea.tools.forEach(t => L.push("- " + t.name + ": " + t.use + " / 주의: " + t.caution + " / 대안: " + t.alternative));
+  L.push("", "## 수업 흐름");
+  idea.flow.forEach(f => L.push("- " + f.stage + ": " + f.activity));
+  L.push("", "## 학생 산출물", idea.studentOutput);
+  L.push("", "## 평가 방향");
+  idea.assessment.forEach(a => L.push("- " + a));
+  L.push("", "## 디지털 윤리 포인트", idea.ethicsPoint);
+  if (expanded) {
+    L.push("", "## 차시별 상세");
+    expanded.lessons.forEach(l => {
+      L.push("", "### " + l.lessonNo + " - " + l.goal);
+      L.push("- 도입: " + l.intro);
+      l.main.forEach(m => L.push("- 전개: " + m));
+      L.push("- 정리: " + l.wrap);
+      if (l.materials.length) L.push("- 준비물: " + l.materials.join(", "));
+    });
+    if (expanded.tips.length) {
+      L.push("", "## 운영 팁");
+      expanded.tips.forEach(t => L.push("- " + t));
+    }
+  }
+  L.push("", "_AI 생성 초안 - 교사 검토 후 사용_");
+  return L.join("\n");
+}
+
+/* =========================================================
+   상세 보기
+   ========================================================= */
+function detailBaseHtml(idea) {
+  return "<h3>융합 포인트</h3><p>" + esc(idea.fusionPoint) + "</p>" +
+    "<h3>관련 성취기준</h3>" + (idea.standards.length ? "<ul>" + idea.standards.map(stdHtml).join("") + "</ul>" : '<p class="hint">없음 - 직접 확인하세요.</p>') +
+    "<h3>활용 도구</h3><ul>" + idea.tools.map(t =>
+      "<li><b>" + esc(t.name) + "</b>" + (t.genAI ? ' <span class="badge warn">교사 시연 권장</span>' : "") +
+      (!t.known && !t.genAI ? ' <span class="badge warn">확인 필요</span>' : "") +
+      "<br>" + esc(t.use) + '<br><span class="hint">주의: ' + esc(t.caution) + " · 대안: " + esc(t.alternative) + "</span></li>").join("") + "</ul>" +
+    "<h3>수업 흐름</h3><ul>" + idea.flow.map(f => "<li><b>" + esc(f.stage) + "</b> " + esc(f.activity) + "</li>").join("") + "</ul>" +
+    "<h3>학생 산출물</h3><p>" + esc(idea.studentOutput) + "</p>" +
+    "<h3>평가 방향</h3><ul>" + idea.assessment.map(a => "<li>" + esc(a) + "</li>").join("") + "</ul>" +
+    "<h3>디지털 윤리 포인트</h3><p>" + esc(idea.ethicsPoint) + "</p>";
+}
+
+function expandedHtml(ex) {
+  return "<h3>차시별 상세 흐름</h3>" + ex.lessons.map(l =>
+    '<div class="lesson"><h4>' + esc(l.lessonNo) + " · " + esc(l.goal) + "</h4>" +
+    "<p><b>도입</b> " + esc(l.intro) + "</p>" +
+    "<p><b>전개</b></p><ul>" + l.main.map(m => "<li>" + esc(m) + "</li>").join("") + "</ul>" +
+    "<p><b>정리</b> " + esc(l.wrap) + "</p>" +
+    (l.materials.length ? '<p class="hint">준비물: ' + esc(l.materials.join(", ")) + "</p>" : "") +
+    "</div>").join("") +
+    (ex.tips.length ? "<h3>운영 팁</h3><ul>" + ex.tips.map(t => "<li>" + esc(t) + "</li>").join("") + "</ul>" : "");
+}
+
+async function openDetail(idea, input, readOnly) {
+  const dlg = $("#detailDlg");
+  $("#detailTitle").textContent = idea.title;
+  const ex = idea.expanded || null;
+  state.detailText = ideaToMarkdown(idea, input, ex);
+  $("#detailBody").innerHTML = detailBaseHtml(idea) +
+    '<div id="expandArea">' + (ex ? expandedHtml(ex)
+      : (readOnly ? "" : '<button class="btn primary" type="button" id="expandBtn">차시별로 더 자세히 펼치기</button>')) + "</div>";
+  if (!dlg.open) dlg.showModal();
+
+  const btn = $("#expandBtn");
+  if (btn) btn.addEventListener("click", async () => {
+    if (!getKey()) { dlg.close(); openKeyDialog(); return; }
+    btn.disabled = true;
+    $("#expandArea").innerHTML = '<div class="loading" role="status"><div class="spinner" aria-hidden="true"></div><span>차시별 흐름을 만드는 중…</span></div>';
+    try {
+      const raw = await generateWithRetry(SYSTEM_PROMPT, buildExpandPrompt(input, idea), EXPAND_SCHEMA, 0.6);
+      idea.expanded = { lessons: raw.lessons || [], tips: raw.tips || [] };
+      $("#expandArea").innerHTML = expandedHtml(idea.expanded);
+      state.detailText = ideaToMarkdown(idea, input, idea.expanded);
+      updateFavIfExists(idea, input);
+    } catch (e) {
+      const fe = friendlyError(e);
+      $("#expandArea").innerHTML = '<p class="notice bad">' + esc(fe.text) + "</p>";
+    }
+  });
+}
+
+/* =========================================================
+   즐겨찾기
+   ========================================================= */
+function favIndex(favs, idea, input) {
+  return favs.findIndex(f => f.idea.title === idea.title && hashKey(f.input) === hashKey(input));
+}
+function toggleFav(idea, input, btn) {
+  const favs = store.get("favorites", []);
+  const i = favIndex(favs, idea, input);
+  if (i >= 0) { favs.splice(i, 1); toast("즐겨찾기에서 뺐어요"); }
+  else {
+    favs.unshift({ idea: idea, input: input, at: Date.now() });
+    if (favs.length > CONFIG.favLimit) favs.length = CONFIG.favLimit;
+    toast("즐겨찾기에 저장했어요");
+  }
+  store.set("favorites", favs);
+  if (btn) {
+    const on = i < 0;
+    btn.setAttribute("aria-pressed", String(on));
+    btn.textContent = on ? "★ 저장됨" : "☆ 즐겨찾기";
+  }
+}
+function updateFavIfExists(idea, input) {
+  const favs = store.get("favorites", []);
+  const i = favIndex(favs, idea, input);
+  if (i >= 0) { favs[i].idea = idea; store.set("favorites", favs); }
+}
+function renderFavs() {
+  const favs = store.get("favorites", []);
+  const body = $("#favBody");
+  if (!favs.length) { body.innerHTML = '<p class="empty">아직 저장한 아이디어가 없어요.</p>'; return; }
+  body.innerHTML = favs.map((f, i) =>
+    '<div class="lesson"><h4>' + esc(f.idea.title) + "</h4>" +
+    '<p class="hint">' + f.input.grade + "학년 · " + esc(f.input.subjects.join(" + ")) + " · " + esc(f.input.keywords.join(", ")) +
+    " · " + new Date(f.at).toLocaleDateString("ko-KR") + (f.idea.expanded ? " · 차시 상세 포함" : "") + "</p>" +
+    '<div class="actions">' +
+      '<button class="btn small" type="button" data-fav="open" data-i="' + i + '">보기</button>' +
+      '<button class="btn small" type="button" data-fav="copy" data-i="' + i + '">복사</button>' +
+      '<button class="btn small danger" type="button" data-fav="del" data-i="' + i + '">삭제</button>' +
+    "</div></div>").join("");
+  body.querySelectorAll("[data-fav]").forEach(b => {
+    b.addEventListener("click", () => {
+      const list = store.get("favorites", []);
+      const f = list[Number(b.dataset.i)];
+      if (!f) return;
+      if (b.dataset.fav === "copy") copyText(ideaToMarkdown(f.idea, f.input, f.idea.expanded));
+      if (b.dataset.fav === "del") { list.splice(Number(b.dataset.i), 1); store.set("favorites", list); renderFavs(); }
+      if (b.dataset.fav === "open") { $("#favDlg").close(); openDetail(f.idea, f.input, !getKey()); }
+    });
+  });
+}
+
+/* =========================================================
+   키 설정
+   ========================================================= */
+function refreshKeyBadge() {
+  const has = !!getKey();
+  const b = $("#keyBadge");
+  b.textContent = has ? "키 연결됨" : "키 없음";
+  b.className = "key-status " + (has ? "on" : "off");
+}
+function openKeyDialog() {
+  const m = getModels();
+  $("#apiKey").value = getKey();
+  $("#modelMain").value = m.main;
+  $("#modelFallback").value = m.fallback;
+  let session = false;
+  try { session = !!sessionStorage.getItem("gem_key"); } catch (e) {}
+  document.querySelector('input[name="keyMode"][value="' + (session ? "session" : "local") + '"]').checked = true;
+  $("#keyMsg").innerHTML = "";
+  if (!$("#keyDlg").open) $("#keyDlg").showModal();
+}
+async function testKey(key) {
+  const res = await fetch(CONFIG.apiBase + "/models?pageSize=1", { headers: { "x-goog-api-key": key } });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, (data.error && data.error.message) || "HTTP " + res.status);
+  }
+}
+async function saveKey() {
+  const key = $("#apiKey").value.trim();
+  const mode = document.querySelector('input[name="keyMode"]:checked').value;
+  const msg = $("#keyMsg");
+  if (!key) { msg.innerHTML = '<p class="notice bad">키를 붙여 넣으세요.</p>'; return; }
+  const btn = $("#saveKey");
+  btn.disabled = true;
+  msg.innerHTML = '<p class="notice info">연결을 확인하는 중…</p>';
+  try {
+    await testKey(key);
+    setKey(key, mode);
+    store.set("gem_models", {
+      main: $("#modelMain").value.trim() || CONFIG.defaultModel,
+      fallback: $("#modelFallback").value.trim() || CONFIG.defaultFallback
+    });
+    refreshKeyBadge();
+    msg.innerHTML = "";
+    $("#keyDlg").close();
+    toast("키를 저장했어요");
+  } catch (e) {
+    const text = e.status === 0 || e.message === "Failed to fetch"
+      ? "인터넷 연결을 확인하세요."
+      : "키를 확인하지 못했어요. 키를 다시 복사해 붙여 넣으세요. (" + e.message + ")";
+    msg.innerHTML = '<p class="notice bad">' + esc(text) + "</p>";
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* =========================================================
+   시작
+   ========================================================= */
+function init() {
+  renderGrades();
+  renderSuggest();
+  refreshKeyBadge();
+
+  $("#keyword").addEventListener("input", validateForm);
+  $("#optTool").addEventListener("input", validateForm);
+  $("#keyword").addEventListener("keydown", e => { if (e.key === "Enter" && !$("#generate").disabled) generate(false); });
+  $("#generate").addEventListener("click", () => generate(false));
+  $("#openKey").addEventListener("click", openKeyDialog);
+  $("#openFav").addEventListener("click", () => { renderFavs(); $("#favDlg").showModal(); });
+  $("#saveKey").addEventListener("click", saveKey);
+  $("#deleteKey").addEventListener("click", () => {
+    clearKey(); $("#apiKey").value = ""; refreshKeyBadge();
+    $("#keyMsg").innerHTML = '<p class="notice info">이 브라우저에서 키를 지웠어요. 키를 완전히 없애려면 AI Studio에서도 삭제하세요.</p>';
+  });
+  $("#showKey").addEventListener("change", e => { $("#apiKey").type = e.target.checked ? "text" : "password"; });
+  $("#detailCopy").addEventListener("click", () => copyText(state.detailText));
+
+  document.querySelectorAll("dialog").forEach(d => {
+    d.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => d.close()));
+    d.addEventListener("click", e => { if (e.target === d) d.close(); }); // 바깥 클릭 시 닫기
+  });
+
+  validateForm();
+  if (!getKey()) openKeyDialog();
+}
+init();
+</script>
+</body>
+</html>
